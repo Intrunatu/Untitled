@@ -33,7 +33,7 @@ for i = 1:3
     opts.timeStep = dt;
     opts.sunHeightLim = 5;
     
-    opts.Nhist = 12;
+    opts.Nhist = ceil(6*60/dt);
     opts.Npred = ceil(6*60/dt);
     opts.Nskip = 0;
     
