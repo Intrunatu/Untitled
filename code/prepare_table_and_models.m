@@ -28,8 +28,8 @@ solisOpts.w        = 1.8;      % colonne d'eau en cm
 opts.solisOpts=solisOpts;
 
 %% Entraine les modèles
-for i = 1:3
-    dt = 20*i;
+for i = 1:12
+    dt = 5*i;
     disp([dt 6*60/dt])
     
     opts.timeStep = dt;
@@ -56,6 +56,7 @@ end
 
 
 %% Prepare la table pour forecast
+tic
 [fm, inputTableForecast] = forecastModel(inputTableForecast, 'ARMA', opts,...
         'plot'                  , false     , ...
         'fillGaps'              , true      , ...
@@ -65,3 +66,4 @@ end
         'nightBehaviour'        , 'deleteNightValues' , ...
         'verbose'               , false);
 save('inputTableForecast', 'inputTableForecast')
+toc

@@ -11,7 +11,6 @@ end
 %% Metrics inside
 figure(1)
 for i =1:length(fmList)
-    disp(i)
     fm = fmList(i);
     t = (1:fm.Npred)*fm.timeStep;
     dt = fm.timeStep*ones(1, fm.Npred);
@@ -37,7 +36,7 @@ for i =1:length(fmList)
     results{i} = [dt', t',   metrics{6,2:end}'];
 end
 
-
+%%
 figure(2), clf
 for i=1:length(results)
     r= results{i};
@@ -57,7 +56,7 @@ grid on
 figure(3)
 x = results{1}(:,2);
 y = results{1}(1,1);
-z = results{1}(:,3);
+z = results{1}(:,3)';
 for i=2:length(results)
     r= results{i};
     dt = r(:,1);
@@ -65,9 +64,9 @@ for i=2:length(results)
     y = [y results{i}(1,1)];
     rmse = r(:,3);
     
-    z = [z interp1(t,rmse,x)];
+    z = [z; interp1(t,rmse,x)'];    
 end
-surf(x,y,z')
+surf(x,y,z)
 zlabel('nRMSE')
 xlabel('Horizon')
 xticks(0:60:max(xlim))
