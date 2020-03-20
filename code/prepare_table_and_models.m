@@ -1,6 +1,7 @@
 clear all; close all; clc
 addpath([userpath '\PartageDeCode\toolbox\'])
 addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
+delete('fmARMA*.mat')
 
 % Données météo
 rawData = load([userpath '\Data\Données odeillo\Odeillo_UTC.mat']);
