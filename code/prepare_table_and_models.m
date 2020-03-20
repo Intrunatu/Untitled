@@ -12,7 +12,7 @@ inputTable(isnat(inputTable.Time),:)=[];
 inputTable(inputTable.Irradiance<0,:) = [];
 
 inputTableTrain=inputTable(5113147:5638657,:); % Du 01/01/14 au 01/01/15
-
+inputTableForecast=inputTable(5638657:end,:); % Du 01/01/15 au 18/10/16
 
 
 % Options du modele
@@ -27,6 +27,7 @@ solisOpts.oad      = 0.2;      % prof optique pour aerosol a 700nm
 solisOpts.w        = 1.8;      % colonne d'eau en cm
 opts.solisOpts=solisOpts;
 
+%% Entraine les modèles
 for i = 1:3
     dt = 20*i;
     disp([dt 6*60/dt])
@@ -52,3 +53,15 @@ for i = 1:3
     fm.save(sprintf('fmARMA_6h_%02.0fmin', dt));
     toc
 end
+
+
+%% Prepare la table pour forecast
+[fm, inputTableForecast] = forecastModel(inputTableForecast, 'ARMA', opts,...
+        'plot'                  , false     , ...
+        'fillGaps'              , true      , ...
+        'gapInterpolationLimit' , 5         , ...
+        'gapPersistenceLimit'   , 30        , ...  % n'utilise pas la persistance
+        'gapClearskyLimit'      , 30        , ...
+        'nightBehaviour'        , 'deleteNightValues' , ...
+        'verbose'               , false);
+save('inputTableForecast', 'inputTableForecast')
