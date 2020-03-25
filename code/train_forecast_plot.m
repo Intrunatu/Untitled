@@ -4,25 +4,14 @@ addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
 load('filledTables')
 
 
-% Options du modele
-solisOpts.phi      = 42.497;   % latitude degre
-solisOpts.lambda   =  2.030;   % longitude degre
-solisOpts.altitude = 1650;     % altitude en m
-solisOpts.zone     = 2;        % type d'aerosol 1=rural 2=maritime 3=urban 4=tropospherique
-solisOpts.azimut   = 1.63;     % azimut en degré
-solisOpts.albedo   = 0.25;     % albédo du sol
-solisOpts.tilt     = 30;       % angle d'inclinaison en degre
-solisOpts.oad      = 0.2;      % prof optique pour aerosol a 700nm
-solisOpts.w        = 1.8;      % colonne d'eau en cm
-opts.solisOpts=solisOpts;
-
 %% Entraine les modèles
+opts.solisOpts=fm1.solisOpts;
 for i = 1:12
     dt = 5*i;
     disp([dt 6*60/dt])
     
     opts.timeStep = dt;
-    opts.sunHeightLim = 5;
+    opts.sunHeightLim = fm1.sunHeightLim;
     
     opts.Nhist = ceil(6*60/dt);
     opts.Npred = ceil(6*60/dt);
@@ -31,12 +20,12 @@ for i = 1:12
     tic
     rng(1)
     fmList(i) = forecastModel(filledTableTrain, 'ARMA', opts,...
-        'plot'                  , false     , ...
-        'fillGaps'              , true      , ...
-        'gapInterpolationLimit' , 5         , ...
-        'gapPersistenceLimit'   , 30        , ...  % n'utilise pas la persistance
-        'gapClearskyLimit'      , 30        , ...
-        'nightBehaviour'        , 'deleteNightValues' , ...
+        'plot'                  , false                             , ...
+        'fillGaps'              , false                             , ...
+        'gapInterpolationLimit' , fm1.cleanPara.interpolation_limit , ...
+        'gapPersistenceLimit'   , fm1.cleanPara.persistence_limit   , ...
+        'gapClearskyLimit'      , fm1.cleanPara.clearsky_limit      , ...
+        'nightBehaviour'        , fm1.nightBehaviour                , ...
         'verbose'               , false);
     toc
 end
