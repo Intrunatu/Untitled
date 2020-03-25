@@ -19,17 +19,18 @@ for i = 1:12
     
     tic
     rng(1)
-    fmList(i) = forecastModel(filledTableTrain, 'ARMA', opts,...
+    fmList(i) = forecastModel(filledTableTrain, 'NN', opts,...
         'plot'                  , false                             , ...
         'fillGaps'              , false                             , ...
         'gapInterpolationLimit' , fm1.cleanPara.interpolation_limit , ...
         'gapPersistenceLimit'   , fm1.cleanPara.persistence_limit   , ...
         'gapClearskyLimit'      , fm1.cleanPara.clearsky_limit      , ...
         'nightBehaviour'        , fm1.nightBehaviour                , ...
-        'verbose'               , false);
+        'verbose'               , true);
     toc
 end
-save("fmArray_ARMA_6h", 'fmList')
+save(sprintf("fmArray_%s_6h", fmList(1).modelType), 'fmList')
+
 
 %% Metrics inside
 figure(1)
@@ -60,7 +61,8 @@ for i =1:length(fmList)
     results{i} = [dt', t',   metrics{6,2:end}'];
 end
 
-%%
+
+%% Affichages
 figure(2), clf
 for i=1:length(results)
     r= results{i};
@@ -100,9 +102,12 @@ xlabel('Horizon')
 xticks(0:60:max(xlim))
 ylabel('TimeStep')
 grid on
+zlim([0 0.3])
+
 
 figure(4)
 plot(x, y(id))
 xlabel('Horizon')
 xticks(0:60:max(xlim))
 ylabel('TimeStep')
+
