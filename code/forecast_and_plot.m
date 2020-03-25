@@ -25,6 +25,7 @@ for i =1:length(fmList)
     fm = fmList(i);
     t = (1:fm.Npred)*fm.timeStep;
     dt = fm.timeStep*ones(1, fm.Npred);
+    fm.cleanPara.enable = false;
    
     % Calcul complet pour faire les erreurs à la main. Long à cause du fillGaps
     [timePred, GiPred, GiMeas, isFilled, avgTable] = fm.forecast_full(inputTableForecast);
