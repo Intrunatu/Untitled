@@ -53,7 +53,7 @@ grid on
 
 
 
-figure(3)
+figure(3), clf
 x = results{1}(:,2);
 y = results{1}(1,1);
 z = results{1}(:,3)';
@@ -66,9 +66,19 @@ for i=2:length(results)
     
     z = [z; interp1(t,rmse,x)'];    
 end
+[minRMSE, id]=min(z); % valeurs min du nRMSE pour chaque horizon (Cyril)
 surf(x,y,z)
+hold all
+scatter3(x, y(id),minRMSE, 'r', 'filled')
+
 zlabel('nRMSE')
 xlabel('Horizon')
 xticks(0:60:max(xlim))
 ylabel('TimeStep')
 grid on
+
+figure(4)
+plot(x, y(id))
+xlabel('Horizon')
+xticks(0:60:max(xlim))
+ylabel('TimeStep')
