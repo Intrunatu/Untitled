@@ -41,7 +41,7 @@ for i = 1:12
     
     tic
     rng(1)
-    [fm, filledTableTrain] = forecastModel(inputTableTrain, 'ARMA', opts,...
+    [fm(i), filledTableTrain] = forecastModel(inputTableTrain, 'ARMA', opts,...
         'plot'                  , false     , ...
         'fillGaps'              , true      , ...
         'gapInterpolationLimit' , 5         , ...
@@ -50,10 +50,10 @@ for i = 1:12
         'nightBehaviour'        , 'deleteNightValues' , ...
         'verbose'               , false);
     inputTableTrain = filledTableTrain;
-    fm.save(sprintf('fmARMA_6h_%02.0fmin', dt));
     toc
 end
 
+save("fmArray_ARMA_6h", 'fm')
 
 %% Prepare la table pour forecast
 tic

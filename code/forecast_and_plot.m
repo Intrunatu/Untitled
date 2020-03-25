@@ -3,10 +3,8 @@ addpath([userpath '\PartageDeCode\toolbox\'])
 addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
 load('inputTableForecast')
 
-filelist =ls('fmARMA*.mat');
-for i=1:size(filelist,1)
-    fmList(i) = forecastModel(filelist(i,:));
-end
+data = load("fmArray_ARMA_6h.mat", 'fm');
+fmList = data.fm;
 
 %% Metrics inside
 figure(1)
