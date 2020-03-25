@@ -5,34 +5,17 @@ load('filledTables')
 
 
 %% Entraine les modèles
-opts.solisOpts=fm1.solisOpts;
-for i = 1:12
-    dt = 5*i;
-    disp([dt 6*60/dt])
-    
-    opts.timeStep = dt;
-    opts.sunHeightLim = fm1.sunHeightLim;
-    
-    opts.Nhist = ceil(6*60/dt);
-    opts.Npred = ceil(6*60/dt);
-    opts.Nskip = 0;
-    
-    tic
-    rng(1)
-    fmList(i) = forecastModel(filledTableTrain, 'NN', opts,...
-        'plot'                  , false                             , ...
-        'fillGaps'              , false                             , ...
-        'gapInterpolationLimit' , fm1.cleanPara.interpolation_limit , ...
-        'gapPersistenceLimit'   , fm1.cleanPara.persistence_limit   , ...
-        'gapClearskyLimit'      , fm1.cleanPara.clearsky_limit      , ...
-        'nightBehaviour'        , fm1.nightBehaviour                , ...
-        'verbose'               , true);
-    toc
-end
-save(sprintf("fmArray_%s_6h", fmList(1).modelType), 'fmList')
+% fmList = train_models(filledTableTrain, 'ARMA', fm1);
+% save(sprintf("fmArray_%s_6h", fmList(1).modelType), 'fmList')
+load('fmArray_ARMA_6h.mat')
 
+%% Metrics outide
+% [results] = calc_results(fmList,filledTableForecast);
+% save(sprintf("results_%s_6h", fmList(1).modelType), 'results')
+load('results_NN_6h.mat')
 
-%% Metrics inside
+%% Affichages
+% Metrics inside
 figure(1)
 for i =1:length(fmList)
     fm = fmList(i);
@@ -43,26 +26,6 @@ for i =1:length(fmList)
     plot3(t, dt, metrics_inside{6,2:end}), hold all
 end
 
-
-%% Metrics outide
-results = cell(size(fmList));
-for i =1:length(fmList)
-    disp(i)
-    fm = fmList(i);
-    t = (1:fm.Npred)*fm.timeStep;
-    dt = fm.timeStep*ones(1, fm.Npred);
-    fm.cleanPara.enable = false;
-   
-    % Calcul complet pour faire les erreurs à la main. Long à cause du fillGaps
-    [timePred, GiPred, GiMeas, isFilled, avgTable] = fm.forecast_full(filledTableForecast);
-    GiMeas(isFilled) = NaN;
-    GiPred(isFilled) = NaN;
-    metrics = fm.get_metrics(GiMeas, GiPred);   
-    results{i} = [dt', t',   metrics{6,2:end}'];
-end
-
-
-%% Affichages
 figure(2), clf
 for i=1:length(results)
     r= results{i};
@@ -96,7 +59,6 @@ end
 surf(x,y,z)
 hold all
 scatter3(x, y(id),minRMSE, 'r', 'filled')
-
 zlabel('nRMSE')
 xlabel('Horizon')
 xticks(0:60:max(xlim))
