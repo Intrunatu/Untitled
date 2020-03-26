@@ -9,12 +9,6 @@ load('filledTables')
 % save(sprintf("fmArray_%s_6h", fmList(1).modelType), 'fmList')
 load('fmArray_ARMA_6h.mat')
 
-%% Metrics outide
-% [results] = calc_results(fmList,filledTableForecast);
-% save(sprintf("results_%s_6h", fmList(1).modelType), 'results')
-load('results_NN_6h.mat')
-
-%% Affichages
 % Metrics inside
 figure(1)
 for i =1:length(fmList)
@@ -26,11 +20,18 @@ for i =1:length(fmList)
     plot3(t, dt, metrics_inside{6,2:end}), hold all
 end
 
+%% Metrics outide
+% results = calc_results(fmList,filledTableForecast);
+% save(sprintf("results_%s_6h", fmList(1).modelType), 'results')
+load('results_NN_6h.mat')
+
+%% Affichages
+
 figure(2), clf
-for i=1:length(results)
-    r= results{i};
+for i = 1:length(results)
+    r  = results{i};
     dt = r(:,1);
-    t = r(:,2);
+    t  = r(:,2);
     rmse = r(:,3);
     plot3(t, dt, rmse, '.-'), hold all
 end
