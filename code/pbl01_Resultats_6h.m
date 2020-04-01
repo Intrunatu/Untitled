@@ -27,7 +27,7 @@ if false
     prepare_tables
     
     load('filledTables')    
-    fmList = train_models(filledTableTrain, 'ARMA', fm1);
+    fmList = train_models(filledTableTrain, 'ARMA', fm1, 5:5:60, 6*60);
     save(sprintf("fmArray_%s_6h", fmList(1).modelType), 'fmList')
     
     results = calc_results(fmList,filledTableForecast);

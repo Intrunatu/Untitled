@@ -1,16 +1,17 @@
-function [fmList] = train_models(filledTableTrain, modelType, modelTemplate)
+function [fmList] = train_models(filledTableTrain, modelType,...
+    modelTemplate, timeSteps, maxHorizon)
 %TRAIN_MODELS Summary of this function goes here
 %   Detailed explanation goes here
 opts.solisOpts=modelTemplate.solisOpts;
-for i = 1:12
-    dt = 5*i;
-    disp([dt 6*60/dt])
+for i = 1:length(timeSteps)
+    dt = timeSteps(i);
+    disp([dt maxHorizon/dt])
     
     opts.timeStep = dt;
     opts.sunHeightLim = modelTemplate.sunHeightLim;
     
-    opts.Nhist = ceil(6*60/dt);
-    opts.Npred = ceil(6*60/dt);
+    opts.Nhist = ceil(maxHorizon/dt);
+    opts.Npred = ceil(maxHorizon/dt);
     opts.Nskip = 0;
     
     tic
