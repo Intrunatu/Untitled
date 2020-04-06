@@ -59,7 +59,7 @@ xlabel('Années')
 ylabel('Heures')
 
 %%
-data(1533601:end,:)=[];
+data(1533601:end,:)=[]; % Retrait apres 2017-12-01
 % Les données ont l'air synchro avec le clearsky (heures en UTC bien sur).
 % Par contre à partir de Décembre 2017, la valeur mesurée chute !
 % Bizarrement cela correspond à la date à laquelle on a ajouté la mesure du

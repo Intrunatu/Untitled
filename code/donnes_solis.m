@@ -12,13 +12,13 @@ solis.ajaccio.oad      = 0.2;      % prof optique pour aerosol a 700nm
 solis.ajaccio.w        = 1.8;      % colonne d'eau en cm
 
 % Solis ODEILLO
-solis.odeillo.phi      = 42.497;   % latitude degre
-solis.odeillo.lambda   =  2.030;   % longitude degre
+solis.odeillo.phi      = 42.493561;   % latitude degre
+solis.odeillo.lambda   =  2.029285;   % longitude degre
 solis.odeillo.altitude = 1650;     % altitude en m
 solis.odeillo.zone     = 2;        % type d'aerosol 1=rural 2=maritime 3=urban 4=tropospherique
-solis.odeillo.azimut   = 1.63;     % azimut en degré
+solis.odeillo.azimut   = 0;     % azimut en degré
 solis.odeillo.albedo   = 0.25;     % albédo du sol
-solis.odeillo.tilt     = 30;       % angle d'inclinaison en degre
+solis.odeillo.tilt     = 0;       % angle d'inclinaison en degre
 solis.odeillo.oad      = 0.2;      % prof optique pour aerosol a 700nm
 solis.odeillo.w        = 1.8;      % colonne d'eau en cm
 end
