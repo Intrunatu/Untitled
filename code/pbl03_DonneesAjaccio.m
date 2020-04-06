@@ -5,6 +5,7 @@ clear all; close all; clc
 addpath([userpath '\PartageDeCode\toolbox\'])
 addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
 load(fullfile(userpath, 'Data', 'Ajaccio', '2015-2018_1min.mat'));
+solis = donnes_solis();
 data(1:60,:) = [];
 data(2102401:end,:)=[];
 
@@ -12,15 +13,7 @@ data(2102401:end,:)=[];
 % Pour vérifier la qualité des données, je compare avec le ClearSky.
 
 % Options du modele
-solisOpts.phi      = 41.9167;  % latitude degre
-solisOpts.lambda   =  8.7333;  % longitude degre
-solisOpts.altitude = 70;       % altitude en m
-solisOpts.zone     = 2;        % type d'aerosol 1=rural 2=maritime 3=urban 4=tropospherique
-solisOpts.azimut   = 0;        % azimut en degré
-solisOpts.albedo   = 0.25;     % albédo du sol
-solisOpts.tilt     =  0;       % angle d'inclinaison en degre
-solisOpts.oad      = 0.2;      % prof optique pour aerosol a 700nm
-solisOpts.w        = 1.8;      % colonne d'eau en cm
+solisOpts = solis.ajaccio;
 
 % Calcul du ClearSky, Kt et suppression des nuits
 [ClearSky, SunHeight] = bb_solis(data.Time,solisOpts);

@@ -6,27 +6,10 @@ AJO = load('filledTablesAjaccio');
 ODE = load('filledTables');
 modelTemplate = AJO.fm1;
 
-% Solis AJACCIO
-AJO.solisOpts.phi      = 41.9167;  % latitude degre
-AJO.solisOpts.lambda   =  8.7333;  % longitude degre
-AJO.solisOpts.altitude = 70;       % altitude en m
-AJO.solisOpts.zone     = 2;        % type d'aerosol 1=rural 2=maritime 3=urban 4=tropospherique
-AJO.solisOpts.azimut   = 0;        % azimut en degré
-AJO.solisOpts.albedo   = 0.25;     % albédo du sol
-AJO.solisOpts.tilt     =  0;       % angle d'inclinaison en degre
-AJO.solisOpts.oad      = 0.2;      % prof optique pour aerosol a 700nm
-AJO.solisOpts.w        = 1.8;      % colonne d'eau en cm
-
-% Solis ODEILLO
-ODE.solisOpts.phi      = 42.497;   % latitude degre
-ODE.solisOpts.lambda   =  2.030;   % longitude degre
-ODE.solisOpts.altitude = 1650;     % altitude en m
-ODE.solisOpts.zone     = 2;        % type d'aerosol 1=rural 2=maritime 3=urban 4=tropospherique
-ODE.solisOpts.azimut   = 1.63;     % azimut en degré
-ODE.solisOpts.albedo   = 0.25;     % albédo du sol
-ODE.solisOpts.tilt     = 30;       % angle d'inclinaison en degre
-ODE.solisOpts.oad      = 0.2;      % prof optique pour aerosol a 700nm
-ODE.solisOpts.w        = 1.8;      % colonne d'eau en cm
+% Solis 
+solis = donnes_solis();
+AJO.solisOpts = solis.ajaccio;
+ODE.solisOpts = solis.odeillo;
 
 
 

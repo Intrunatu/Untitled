@@ -16,16 +16,8 @@ inputTableForecast=inputTable(5638657:end,:); % Du 01/01/15 au 18/10/16
 
 
 % Options du modele
-solisOpts.phi      = 42.497;   % latitude degre
-solisOpts.lambda   =  2.030;   % longitude degre
-solisOpts.altitude = 1650;     % altitude en m
-solisOpts.zone     = 2;        % type d'aerosol 1=rural 2=maritime 3=urban 4=tropospherique
-solisOpts.azimut   = 1.63;     % azimut en degré
-solisOpts.albedo   = 0.25;     % albédo du sol
-solisOpts.tilt     = 30;       % angle d'inclinaison en degre
-solisOpts.oad      = 0.2;      % prof optique pour aerosol a 700nm
-solisOpts.w        = 1.8;      % colonne d'eau en cm
-opts.solisOpts=solisOpts;
+solis = donnes_solis();
+opts.solisOpts = solis.odeillo;
 
 opts.timeStep = 1;
 opts.sunHeightLim = 5;
