@@ -1,11 +1,11 @@
 %%
 % Global horizontal
 
-clear all; close all; clc
+clea r all; close all; clc
 addpath([userpath '\PartageDeCode\toolbox\'])
 addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
 load(fullfile(userpath, 'Data', 'Ajaccio', '2015-2018_1min.mat'));
-solis = donnes_solis();
+
 data(1:60,:) = [];
 data(2102401:end,:)=[];
 
@@ -13,6 +13,7 @@ data(2102401:end,:)=[];
 % Pour vérifier la qualité des données, je compare avec le ClearSky.
 
 % Options du modele
+solis = donnes_solis();
 solisOpts = solis.ajaccio;
 
 % Calcul du ClearSky, Kt et suppression des nuits
@@ -67,43 +68,46 @@ data(1533601:end,:)=[]; % Retrait apres 2017-12-01
 % txt. Pour le moment je ne vais pas prendre de données apres 2018 pour
 % être sur.
 
-%% Préparation des tables pour entrainement et test
-opts.solisOpts=solisOpts;
-opts.timeStep = 1;
-opts.sunHeightLim = 5;
-opts.Nhist = 1;
-opts.Npred = 1;
-opts.Nskip = 0;
-
-% Préparation de la table pour l'entrainement
-inputTableTrain.Time = data.Time(1:525601);
-inputTableTrain.Irradiance = data.Global00_Wm2(1:525601);
-inputTableTrain = table2timetable(struct2table(inputTableTrain));
-
-disp('Train table')
-tic
-rng(1)
-[fm1, filledTableTrain] = forecastModel(inputTableTrain, 'ARMA', opts,...
-    'plot'                  , false     , ...
-    'fillGaps'              , true      , ...
-    'gapInterpolationLimit' , 5         , ...
-    'gapPersistenceLimit'   , 30        , ...  % n'utilise pas la persistance
-    'gapClearskyLimit'      , 30        , ...
-    'nightBehaviour'        , 'deleteNightValues' , ...
-    'verbose'               , false);
-toc
-
-
-
-% Préparation de la table pour les tests
-inputTableForecast.Time = data.Time(525602:end);
-inputTableForecast.Irradiance = data.Global00_Wm2(525602:end);
-inputTableForecast = table2timetable(struct2table(inputTableForecast));
-
-disp('Test table')
-tic
-rng(1)
-[fm2, filledTableForecast] = forecastModel(inputTableForecast, 'ARMA', opts,...
+%% Préparation des tables pour entrainement et tests
+if ~exist('filledTablesAjaccio.mat','file')
+    
+    opts.solisOpts=solis.ajaccio;
+    opts.timeStep = 1;
+    opts.sunHeightLim = 5;
+    opts.Nhist = 1;
+    opts.Npred = 1;
+    opts.Nskip = 0;
+    
+    % Préparation de la table pour l'entrainement
+    inputTableTrain.Time = data.Time(1:525601);
+    inputTableTrain.Irradiance = data.Global00_Wm2(1:525601);
+    inputTableTrain = table2timetable(struct2table(inputTableTrain));
+    
+    disp('Train table')
+    tic
+    rng(1)
+    [fm1, filledTableTrain] = forecastModel(inputTableTrain, 'ARMA', opts,...
+        'plot'                  , false     , ...
+        'fillGaps'              , true      , ...
+        'gapInterpolationLimit' , 5         , ...
+        'gapPersistenceLimit'   , 30        , ...  % n'utilise pas la persistance
+        'gapClearskyLimit'      , 30        , ...
+        'nightBehaviour'        , 'deleteNightValues' , ...
+        'verbose'               , false);
+    toc
+    
+    
+    
+    % Préparation de la table pour les tests
+    inputTableForecast.Time = data.Time(525602:end);
+    inputTableForecast.Irradiance = data.Global00_Wm2(525602:end);
+    inputTableForecast = table2timetable(struct2table(inputTableForecast));
+    
+    
+    disp('Test table')
+    tic
+    rng(1)
+    [fm2, filledTableForecast] = forecastModel(inputTableForecast, 'ARMA', opts,...
         'plot'                  , false                             , ...
         'fillGaps'              , true                              , ...
         'gapInterpolationLimit' , fm1.cleanPara.interpolation_limit , ...
@@ -111,6 +115,8 @@ rng(1)
         'gapClearskyLimit'      , fm1.cleanPara.clearsky_limit      , ...
         'nightBehaviour'        , fm1.nightBehaviour                , ...
         'verbose'               , false);
-toc
+    toc
+    
+    save('filledTablesAjaccio.mat', 'filledTableTrain', 'filledTableForecast', 'fm1')
+end
 
-save('filledTablesAjaccio.mat', 'filledTableTrain', 'filledTableForecast', 'fm1')
