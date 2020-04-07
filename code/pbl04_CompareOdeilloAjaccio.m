@@ -3,7 +3,7 @@ addpath([userpath '\PartageDeCode\toolbox\'])
 addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
 
 AJO = load('filledTablesAjaccio');
-ODE = load('filledTables');
+ODE = load('filledTablesOdeillo.mat');
 modelTemplate = AJO.fm1;
 
 % Solis 
@@ -19,6 +19,13 @@ opts.Nhist = 12;
 opts.Npred = 12;
 opts.Nskip = 0;
 nightBehaviour = 'deleteNightValues';
+
+
+cummean = @(x) cumsum(x, 'omitnan')./cumsum(~isnan(x));
+cumRMSE = @(meas,pred) sqrt(cummean((meas-pred).^2));  
+cumnRMSE = @(meas,pred)  cumRMSE(meas,pred)./cummean(meas);  
+
+
 
 %% Ajaccio
 rng(1)
@@ -37,6 +44,9 @@ AJO.fm = forecastModel(AJO.filledTableTrain, 'ARMA', opts,...
 GiMeas(isFilled) = NaN;
 GiPred(isFilled) = NaN;
 AJO.metrics = AJO.fm.get_metrics(GiMeas, GiPred);
+figure(37), hold all
+plot(cumnRMSE(GiMeas(:,1), GiPred(:,1)))
+
 
 %% Odeillo
 rng(1)
@@ -54,9 +64,12 @@ ODE.fm = forecastModel(ODE.filledTableTrain, 'ARMA', opts,...
 GiMeas(isFilled) = NaN;
 GiPred(isFilled) = NaN;
 ODE.metrics = ODE.fm.get_metrics(GiMeas, GiPred);
+figure(37), hold all
+plot(cumnRMSE(GiMeas(:,1), GiPred(:,1)))
 
 
 %% Affichage
+figure(1)
 clf, hold all
 steps = AJO.fm.timeStep*(1:AJO.fm.Npred);
 plot(steps, AJO.metrics{6,2:end}*100, 'DisplayName', 'Ajaccio')
