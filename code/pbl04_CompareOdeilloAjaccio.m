@@ -11,8 +11,6 @@ solis = donnes_solis();
 AJO.solisOpts = solis.ajaccio;
 ODE.solisOpts = solis.odeillo;
 
-
-
 opts.timeStep = 10;
 opts.sunHeightLim = modelTemplate.sunHeightLim;
 opts.Nhist = 12;
@@ -44,8 +42,10 @@ AJO.fm = forecastModel(AJO.filledTableTrain, 'ARMA', opts,...
 GiMeas(isFilled) = NaN;
 GiPred(isFilled) = NaN;
 AJO.metrics = AJO.fm.get_metrics(GiMeas, GiPred);
-figure(37), hold all
-plot(cumnRMSE(GiMeas(:,1), GiPred(:,1)))
+AJO.cumnRMSE = cumnRMSE(GiMeas(:,1), GiPred(:,1));
+
+% TR = timerange(AJO.filledTableForecast.Time(end)-hours(36), AJO.filledTableForecast.Time(end)-hours(12));
+% tblout=AJO.fm.forecast(AJO.filledTableForecast(TR,:), 'compare', 'plot', true)
 
 
 %% Odeillo
@@ -64,8 +64,7 @@ ODE.fm = forecastModel(ODE.filledTableTrain, 'ARMA', opts,...
 GiMeas(isFilled) = NaN;
 GiPred(isFilled) = NaN;
 ODE.metrics = ODE.fm.get_metrics(GiMeas, GiPred);
-figure(37), hold all
-plot(cumnRMSE(GiMeas(:,1), GiPred(:,1)))
+ODE.cumnRMSE = cumnRMSE(GiMeas(:,1), GiPred(:,1));
 
 
 %% Affichage
@@ -79,3 +78,19 @@ ylabel('nRMSE [%]')
 grid on
 legend show
 
+figure(2)
+clf, hold all
+plot(AJO.cumnRMSE*100, 'DisplayName', 'Ajaccio')
+plot(ODE.cumnRMSE*100, 'DisplayName', 'Odeillo')
+xlabel('Points []')
+ylabel('nRMSE [%]')
+grid on
+legend show
+
+%%%
+% Cette fois ci comme prévu on a Odeillo qui a un moins bon RMSE
+% qu'Ajaccio. Du coup 40% nRMSE à 2h c'est beaucoup !! Et je ne comprends
+% toujours pas pourquoi avec plein de trous dans les données on avait une
+% meilleure nRMSE.
+% J'ai rajouté une figure pour la convergence de la nRMSE. On voit qu'on a
+% convergé donc c'est bon.
