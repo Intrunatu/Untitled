@@ -13,6 +13,7 @@ maxHorizon  = 2*60;
 
 if ~exist('pbl03_results.mat', 'file')
     AJO_metrics = train_and_forecast(AJO);
+    save('pbl03_results.mat', 'AJO_metrics')
     ODE_metrics = train_and_forecast(ODE);
     save('pbl03_results.mat', 'AJO_metrics', 'ODE_metrics')
 end
@@ -56,20 +57,23 @@ title("Odeillo")
     end
 
     function metrics = train_and_forecast(LOC)
+        metrics = cell(length(modelList),length(timeSteps));
         for i = 1:length(modelList)
-            fmList(i,:) = train_models(LOC.filledTableTrain, modelList{i}, LOC.fm1);
+            fmList(1,:) = train_models(LOC.filledTableTrain, modelList{i}, LOC.fm1);
+
+            for j = 1:length(fmList)
+                fm = fmList(j);
+                % Calcul complet pour faire les erreurs à la main. Long à cause du fillGaps
+                [timePred, GiPred, GiMeas, isFilled, avgTable] = fm.forecast_full(LOC.filledTableForecast);
+                GiMeas(isFilled) = NaN;
+                GiPred(isFilled) = NaN;
+                metrics{i,j} = fm.get_metrics(GiMeas, GiPred);
+                save('pbl03_results_temp.mat', 'metrics')
+            end
         end
         
-        metrics = cell(size(fmList));
-        for i =1:numel(fmList)
-            fprintf('Metrics %d/%d\n', i, numel(fmList))
-            fm = fmList(i);
-            % Calcul complet pour faire les erreurs à la main. Long à cause du fillGaps
-            [timePred, GiPred, GiMeas, isFilled, avgTable] = fm.forecast_full(LOC.filledTableForecast);
-            GiMeas(isFilled) = NaN;
-            GiPred(isFilled) = NaN;
-            metrics{i} = fm.get_metrics(GiMeas, GiPred);
-        end
+        
+
     end
 
     function plot_results(metrics)
