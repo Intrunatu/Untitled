@@ -1,6 +1,10 @@
+%% Résultats 2h
+% Sur ce script je compare les différents modèles sur 2h avec des pas de
+% temps de 5 min à 30 min. J'ai enlevé les GP, ça prennait trop de temps
+% ...
+
 function pbl03_Resultats_2h()
 %% Comparaison des modeles
-% Pas de GP, trop long
 addpath([userpath '\PartageDeCode\toolbox\'])
 addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
 
@@ -26,6 +30,12 @@ title("Ajaccio")
 figure(2)
 plot_results(ODE_metrics)
 title("Odeillo")
+
+%%%
+% On a à peu pres les mêmes résultats pour les 4 modèles et la même allure
+% pour les deux sites. On dirait bien qu'on a les résultats attendus : plus
+% on augmente l'horizon, plus on augmente l'erreur et plus on augmente le
+% timestep, plus on diminue l'erreur grâce au moyennage.
 
 %% Fonctions
     function [fmList] = train_models(filledTableTrain, modelType,...

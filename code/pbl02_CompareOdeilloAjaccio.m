@@ -1,3 +1,8 @@
+%% Comparaison Odeillo Ajaccio
+% Pour se chauffer un peu on va juste faire un modèle sur Ajaccio et un sur
+% Odeillo, calculer les erreurs et comparer les résultats. Ca permet de
+% voir si tout est bon avant de passer aux gros calculs.
+
 clear all; close all; clc
 addpath([userpath '\PartageDeCode\toolbox\'])
 addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
