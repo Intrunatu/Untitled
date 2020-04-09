@@ -43,6 +43,20 @@ data(1533601:end,:)=[]; % Retrait apres 2017-12-01
 
 verif_CS(data, solis.ajaccio)
 prepare_tables(data, solis.ajaccio, 'filledTablesAjaccio.mat')
+AJO = load('filledTablesAjaccio.mat');
+%% 
+% *Donnes d'apprentissage*
+infoTable = AJO.fm1.infos.Gaps;
+Ntot = height(AJO.filledTableTrain);
+disp(infoTable)
+plot_infoTable(infoTable, Ntot)
+%% 
+% *Donnes de test*
+infoTable = AJO.fm2.infos.Gaps;
+Ntot = height(AJO.filledTableForecast);
+disp(infoTable)
+plot_infoTable(infoTable, Ntot)
+
 
 %% Données Odeillo
 % Pour Odeillo, il y avait un soucis avec les heures. Pour recaler en UTC
@@ -53,6 +67,9 @@ prepare_tables(data, solis.ajaccio, 'filledTablesAjaccio.mat')
 % très différents. On a beaucoup plus de données maintenant.
 clearvars data
 rawData = load([userpath '\Data\Données odeillo\Odeillo_UTC.mat']);
+TR = timerange(datetime(2001,01,01, 'TimeZone', 'UTC'),...
+    datetime(2004,01,01, 'TimeZone', 'UTC'), 'closed');
+rawData.data = rawData.data(TR,:);
 data = timetable(rawData.data.Time, rawData.data.GHI);
 clearvars rawData
 data.Properties.VariableNames={'Irradiance'};
@@ -60,8 +77,6 @@ data(isnat(data.Time),:)=[];
 data.Irradiance(data.Irradiance<0,:) = 0;
 
 % Pour pouvoir faire le reshape
-data.Irradiance(end+1) = 0;
-data.Time(end) = dateshift(data.Time(end-1), 'end', 'year')+days(1);
 data = retime(data, 'minutely');
 data(end,:) = [];
 
@@ -71,6 +86,20 @@ xlim(datetime(2001,10,[01 02], 'TimeZone', 'UTC'))
 snapnow;
 
 prepare_tables(data, solis.odeillo, 'filledTablesOdeillo.mat')
+ODE = load('filledTablesOdeillo.mat');
+
+%% 
+% *Donnes d'apprentissage*
+infoTable = ODE.fm1.infos.Gaps;
+Ntot = height(ODE.filledTableTrain);
+disp(infoTable)
+plot_infoTable(infoTable, Ntot)
+%% 
+% *Donnes de test*
+infoTable = ODE.fm2.infos.Gaps;
+Ntot = height(ODE.filledTableForecast);
+disp(infoTable)
+plot_infoTable(infoTable, Ntot)
 
 
 %% Exemple de données décalées
@@ -80,6 +109,7 @@ prepare_tables(data, solis.odeillo, 'filledTablesOdeillo.mat')
 % la fin. A comparer avec celui obtenu qui lui paraît homogène
 data.Time = data.Time + minutes(30);
 verif_CS(data, solis.odeillo)
+
 
 
 %% Vérif du clearsky
@@ -155,10 +185,28 @@ verif_CS(data, solis.odeillo)
                 'verbose'               , false);
             toc
             
-            save(matName, 'filledTableTrain', 'filledTableForecast', 'fm1')
+            save(matName, 'filledTableTrain', 'filledTableForecast', 'fm1', 'fm2')
         end
     end
 
+%%
+    function plot_infoTable(infoTable, Ntot)
+        labels = infoTable.Properties.RowNames(3:end);
+        
+        
+        figure(1); clf;
+        bar(infoTable{3:end,2})
+        xticklabels(labels)
+        grid on
+        
+        figure(2); clf;
+        xMissing = infoTable{1,1}/Ntot;
+        xAtDay = infoTable{2,1}/infoTable{1,1};
+        bar([1-xMissing xMissing; 1-xAtDay xAtDay]*100, 'stacked')
+        
+        xticklabels({'Missing(r)/Total(b)', 'At Day(r)/At Night(b)'})
+        grid on
+    end
 
 end
 
