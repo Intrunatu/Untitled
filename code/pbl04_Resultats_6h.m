@@ -1,3 +1,9 @@
+%% Resultats à 6h
+% Les résultats sont à peu pres les même pour tous les modèles à 2h donc
+% pour 6h je n'utilise qu'ARMA (le plus rapide)
+% 
+
+%% Effet de l'horizon max
 function pbl04_Resultats_6h()
 addpath([userpath '\PartageDeCode\toolbox\'])
 addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
@@ -6,7 +12,7 @@ close all
 AJO = load('filledTablesAjaccio');
 ODE = load('filledTablesOdeillo');
 
-if false
+if true
     fm_1h = train_models(AJO.filledTableTrain, 'ARMA', AJO.fm1, 10, 120);
     fm_6h = train_models(AJO.filledTableTrain, 'ARMA', AJO.fm1, 10, 60*6);
     
@@ -16,7 +22,20 @@ if false
     figure(1), clf, hold all
     plot(m1{1}{6,2:end}*100, '.-')
     plot(m6{1}{6,2:end}*100, '.-')
+    xlabel('Setp')
+    ylabel('nRMSE [%]')
+    grid on
 end
+
+%%% 
+% J'ai entrainé un modèle 10 min pour 1h d'horizon max et 6h. La nRMSE
+% n'est pas la même au début. Sans doute parce que je ne teste pas sur les
+% mêmes points. En prennant un horizon max de 6h, il y a certaines lignes
+% de la matrice |parameters| qui sautent parce qu'il y a des NaNs. Pour moi
+% celle à 2h devrait être inférieure à celle de 6h puisqu'elle a été
+% entrainée sur plus de points. Par contre elle est aussi testée sur plus
+% de points, potentiellement en millieu de journée... A creuser !
+
 
 %% Ajaccio
 if ~exist('pbl04_ResultsAJO.mat','file')
@@ -31,7 +50,10 @@ plot_results(metrics)
 figure
 plot_surface(fmList, metrics)
 
-
+%%%
+% On retrouve l'allure attendue sur Ajaccio. Pas de minimum qui ressort. En
+% augmentant le timestep on gagne en nRMSE mais pas beaucoup. Ca veut dire
+% que ça ne sert à rien d'augmenter le TS pour gagner en nRMSE.
 
 %% Odeillo
 if ~exist('pbl04_ResultsODE.mat','file')
@@ -46,8 +68,12 @@ plot_results(metrics)
 figure
 plot_surface(fmList, metrics)
 
-%% Problème à 60min
-%
+%%% 
+% Même remarque que sur Ajaccio. En plus on a la même allure donc pas mal
+% pour la généralisation. L'erreur est aussi plus importante mais on s'en
+% doutait.
+
+%% Comparaison timesteps
 figure(1), clf, hold all
 plot(5:5:60*6, metrics{1}{6,2:end}*100, '.-')
 plot(60:60:60*6,metrics{end}{6,2:end}*100, '.-')
@@ -58,9 +84,12 @@ ylabel('nRMSE [%]')
 grid on
 
 %%%
-% On a une erreur enorme avec un timestep d'1h ... A voir pourquoi ...
+% En comparant les courbes avec les TS 10min et 1h, on voit quand même
+% qu'on gagne (courbes tracées sur Odeillo)
 
-%%
+
+
+%% Fonctions
 
     function plot_surface(fmList, metrics)
         rmse = metrics{1}{6,2:end};
@@ -79,6 +108,7 @@ grid on
         surf(steps0, timesteps, rmse*100), hold all
         contourf(steps0, timesteps, rmse*100)
         zlabel('nRMSE')
+        zlim([0 50])
         xlabel('Horizon')
         xticks(0:60:max(xlim))
         ylabel('TimeStep')
@@ -149,7 +179,7 @@ grid on
                 'gapPersistenceLimit'   , modelTemplate.cleanPara.persistence_limit   , ...
                 'gapClearskyLimit'      , modelTemplate.cleanPara.clearsky_limit      , ...
                 'nightBehaviour'        , modelTemplate.nightBehaviour                , ...
-                'verbose'               , true);
+                'verbose'               , false);
             toc
         end
     end
