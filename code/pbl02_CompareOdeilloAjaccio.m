@@ -50,6 +50,13 @@ GiPred(isFilled) = NaN;
 AJO.metrics = AJO.fm.get_metrics(GiMeas, GiPred);
 AJO.cumnRMSE = cumnRMSE(GiMeas(:,1), GiPred(:,1));
 
+AJO.sp = AJO.fm;
+AJO.sp.modelType = 'SP';
+[timePred, GiPred, GiMeas, isFilled, avgTable] = AJO.sp.forecast_full(AJO.filledTableForecast);
+GiMeas(isFilled) = NaN;
+GiPred(isFilled) = NaN;
+AJO.metricsSP = AJO.sp.get_metrics(GiMeas, GiPred);
+
 % TR = timerange(AJO.filledTableForecast.Time(end)-hours(36), AJO.filledTableForecast.Time(end)-hours(12));
 % tblout=AJO.fm.forecast(AJO.filledTableForecast(TR,:), 'compare', 'plot', true)
 
@@ -72,13 +79,24 @@ GiPred(isFilled) = NaN;
 ODE.metrics = ODE.fm.get_metrics(GiMeas, GiPred);
 ODE.cumnRMSE = cumnRMSE(GiMeas(:,1), GiPred(:,1));
 
+ODE.sp = ODE.fm;
+ODE.sp.modelType = 'SP';
+[timePred, GiPred, GiMeas, isFilled, avgTable] = ODE.sp.forecast_full(ODE.filledTableForecast);
+GiMeas(isFilled) = NaN;
+GiPred(isFilled) = NaN;
+ODE.metricsSP = ODE.sp.get_metrics(GiMeas, GiPred);
+
 
 %% Affichage
 figure(1)
 clf, hold all
 steps = AJO.fm.timeStep*(1:AJO.fm.Npred);
 plot(steps, AJO.metrics{6,2:end}*100, 'DisplayName', 'Ajaccio')
+set(gca, 'ColorOrderIndex',1)
+plot(steps, AJO.metricsSP{6,2:end}*100, '--', 'DisplayName', 'Ajaccio SP')
 plot(steps, ODE.metrics{6,2:end}*100, 'DisplayName', 'Odeillo')
+set(gca, 'ColorOrderIndex',2)
+plot(steps, ODE.metricsSP{6,2:end}*100, '--', 'DisplayName', 'Odeillo SP')
 xlabel('TimeStep [min]')
 ylabel('nRMSE [%]')
 grid on
