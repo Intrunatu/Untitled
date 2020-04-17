@@ -119,4 +119,19 @@ legend show
 % meilleure nRMSE.
 % J'ai rajouté une figure pour la convergence de la nRMSE. On voit qu'on a
 % convergé donc c'est bon.
+
+%% Facteur de proportionnalité
+% Les deux courbes sont quasiment les mêmes à un facteur $K$ près. 
+K = mean(AJO.metrics{6,2:end}./ODE.metrics{6,2:end});
+
+figure(1)
+clf, hold all
+steps = AJO.fm.timeStep*(1:AJO.fm.Npred);
+plot(steps, AJO.metrics{6,2:end}*100, 'DisplayName', 'Ajaccio')
+plot(steps, ODE.metrics{6,2:end}*100*K, 'DisplayName', 'Odeillo*K')
+xlabel('TimeStep [min]')
+ylabel('nRMSE [%]')
+title(sprintf('K = %.3f', K))
+grid on
+legend show
 end
