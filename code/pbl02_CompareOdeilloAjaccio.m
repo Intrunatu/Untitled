@@ -4,7 +4,8 @@
 % voir si tout est bon avant de passer aux gros calculs.
 
 %%
-clear all; close all; clc
+function pbl02_CompareOdeilloAjaccio()
+close all; clc
 addpath([userpath '\PartageDeCode\toolbox\'])
 addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
 
@@ -118,3 +119,4 @@ legend show
 % meilleure nRMSE.
 % J'ai rajouté une figure pour la convergence de la nRMSE. On voit qu'on a
 % convergé donc c'est bon.
+end
