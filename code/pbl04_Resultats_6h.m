@@ -25,6 +25,13 @@ if true
     xlabel('Setp')
     ylabel('nRMSE [%]')
     grid on
+    
+    figure(2), clf, hold all
+    plot(m1{1}{5,2:end}, '.-')
+    plot(m6{1}{5,2:end}, '.-')
+    xlabel('Setp')
+    ylabel('RMSE [W/m^2]')
+    grid on
 end
 
 %%% 
@@ -35,6 +42,10 @@ end
 % celle à 2h devrait être inférieure à celle de 6h puisqu'elle a été
 % entrainée sur plus de points. Par contre elle est aussi testée sur plus
 % de points, potentiellement en millieu de journée... A creuser !
+%
+% Après discussion avec Cyril j'ai tracé la RMSE et là oui ça colle !
+% Encore un coup de la normalisation qui fait chier !
+
 
 
 %% Ajaccio
@@ -43,12 +54,17 @@ if ~exist('pbl04_ResultsAJO.mat','file')
     metrics = get_metrics(fmList, AJO);
     save('pbl04_ResultsAJO.mat', 'fmList', 'metrics')
 end
-load('pbl04_ResultsAJO.mat', 'fmList', 'metrics')
+AJO.results = load('pbl04_ResultsAJO.mat', 'fmList', 'metrics');
+
+[AJO.steps0, AJO.timesteps, AJO.rmse] = ...
+    interp_results(AJO.results.fmList, AJO.results.metrics);
+
 
 figure
-plot_results(metrics)
+plot_results(AJO.results.metrics)
 figure
-plot_surface(fmList, metrics)
+plot_surface(AJO.steps0, AJO.timesteps, AJO.rmse)
+
 
 %%%
 % On retrouve l'allure attendue sur Ajaccio. Pas de minimum qui ressort. En
@@ -61,12 +77,17 @@ if ~exist('pbl04_ResultsODE.mat','file')
     metrics = get_metrics(fmList, ODE);
     save('pbl04_ResultsODE.mat', 'fmList', 'metrics')
 end
-load('pbl04_ResultsODE.mat', 'fmList', 'metrics')
+ODE.results = load('pbl04_ResultsODE.mat', 'fmList', 'metrics');
+
+[ODE.steps0, ODE.timesteps, ODE.rmse] = ...
+    interp_results(ODE.results.fmList, ODE.results.metrics);
+
 
 figure
-plot_results(metrics)
+plot_results(ODE.results.metrics)
 figure
-plot_surface(fmList, metrics)
+plot_surface(ODE.steps0, ODE.timesteps, ODE.rmse)
+
 
 %%% 
 % Même remarque que sur Ajaccio. En plus on a la même allure donc pas mal
@@ -75,6 +96,7 @@ plot_surface(fmList, metrics)
 
 %% Comparaison timesteps
 figure(1), clf, hold all
+metrics = ODE.results.metrics;
 plot(5:5:60*6, metrics{1}{6,2:end}*100, '.-')
 plot(60:60:60*6,metrics{end}{6,2:end}*100, '.-')
 grid on
@@ -88,21 +110,37 @@ grid on
 % qu'on gagne (courbes tracées sur Odeillo)
 
 
+%% Erreur en fonction du timestep
+% Comme vu avec Cyril, à partir des resultats interpolés, j'ai tracé les
+% courbes de l' erreur vs timestep pour différents horizons. Logiquement on
+% diminue plus on moyenne et ça ressemble à qqc de linéaire (voire un peu
+% quadratique). C'est à peu pres pareil pour les deux sites donc ça peut
+% faire un résultat sympa !
+%
+% Je passe sur <pbl06_Erreur_VS_TimeStep.html un autre fichier> pour ne pas
+% surchager cette page
 
+figure
+plot_rmse_vs_ts(AJO.steps0, AJO.timesteps, AJO.rmse)
+
+figure
+plot_rmse_vs_ts(ODE.steps0, ODE.timesteps, ODE.rmse)
 %% Fonctions
 
-    function plot_surface(fmList, metrics)
+    function [steps0, timesteps, rmse] = interp_results(fmList, metrics)
         rmse = metrics{1}{6,2:end};
         steps0 = (1:fmList(1).Npred)*fmList(1).timeStep;
         timesteps = [fmList.timeStep];
-        
         for i = 2:length(metrics)
             err = metrics{i}{6,2:end};
             steps = (1:fmList(i).Npred)*fmList(i).timeStep;
             err_interp = interp1(steps, err, steps0);
             rmse = [rmse ; err_interp];
         end
-        
+    end
+
+
+    function plot_surface(steps0, timesteps, rmse)
         rmse(rmse>1)=NaN;
         
         surf(steps0, timesteps, rmse*100), hold all
@@ -112,6 +150,18 @@ grid on
         xlabel('Horizon')
         xticks(0:60:max(xlim))
         ylabel('TimeStep')
+        grid on
+    end
+        
+    function plot_rmse_vs_ts(steps0, timesteps, rmse)
+        rmse_short = rmse(:,12:12:end);        %steps0(12:12:end),
+        plot(timesteps, rmse_short*100)
+        labels = cellstr(num2str(steps0(12:12:end)'));
+        labels = cellfun(@(s) strcat(s, ' min'), labels, 'UniformOutput', false);
+        legend(labels)
+        legend('Location', 'sw')
+        xlabel('TimeStep [min]')
+        ylabel('nRMSE [%]')
         grid on
     end
 
