@@ -1,7 +1,7 @@
 %% Resultats à 6h
 % Les résultats sont à peu pres les même pour tous les modèles à 2h donc
 % pour 6h je n'utilise qu'ARMA (le plus rapide)
-% 
+%
 
 %% Effet de l'horizon max
 function pbl04_Resultats_6h()
@@ -34,7 +34,7 @@ if true
     grid on
 end
 
-%%% 
+%%%
 % J'ai entrainé un modèle 10 min pour 1h d'horizon max et 6h. La nRMSE
 % n'est pas la même au début. Sans doute parce que je ne teste pas sur les
 % mêmes points. En prennant un horizon max de 6h, il y a certaines lignes
@@ -89,7 +89,7 @@ figure
 plot_surface(ODE.steps0, ODE.timesteps, ODE.rmse)
 
 
-%%% 
+%%%
 % Même remarque que sur Ajaccio. En plus on a la même allure donc pas mal
 % pour la généralisation. L'erreur est aussi plus importante mais on s'en
 % doutait.
@@ -122,9 +122,12 @@ grid on
 
 figure
 plot_rmse_vs_ts(AJO.steps0, AJO.timesteps, AJO.rmse)
+title('Ajaccio')
 
 figure
 plot_rmse_vs_ts(ODE.steps0, ODE.timesteps, ODE.rmse)
+title('Odeillo')
+
 %% Fonctions
 
     function [steps0, timesteps, rmse] = interp_results(fmList, metrics)
@@ -152,7 +155,7 @@ plot_rmse_vs_ts(ODE.steps0, ODE.timesteps, ODE.rmse)
         ylabel('TimeStep')
         grid on
     end
-        
+
     function plot_rmse_vs_ts(steps0, timesteps, rmse)
         rmse_short = rmse(:,12:12:end);        %steps0(12:12:end),
         plot(timesteps, rmse_short*100)
