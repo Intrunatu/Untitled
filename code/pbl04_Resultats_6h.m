@@ -5,8 +5,8 @@
 
 %% Effet de l'horizon max
 function pbl04_Resultats_6h()
-addpath([userpath '\PartageDeCode\toolbox\'])
-addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox'))
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox', 'sources', 'prevision'))
 close all
 
 AJO = load('filledTablesAjaccio');

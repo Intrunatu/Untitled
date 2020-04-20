@@ -3,8 +3,8 @@
 %
 %%%
 function pbl06_Erreur_VS_TimeStep()
-addpath([userpath '\PartageDeCode\toolbox\'])
-addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox'))
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox', 'sources', 'prevision'))
 colors = lines;
 
 AJO.results = load('pbl04_ResultsAJO.mat', 'fmList', 'metrics');

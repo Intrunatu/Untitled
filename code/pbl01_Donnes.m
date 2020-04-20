@@ -7,8 +7,8 @@
 %%
 function pbl01_Donnes()
 close all
-addpath([userpath '\PartageDeCode\toolbox\'])
-addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox'))
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox', 'sources', 'prevision'))
 
 %% Donnees Ajaccio
 load(fullfile(userpath, 'Data', 'Ajaccio', '2015-2018_1min.mat'));
@@ -66,7 +66,7 @@ plot_infoTable(infoTable, Ntot)
 % refaire toute l'importation. C'est pour ça que les résultats Odeillo sont
 % très différents. On a beaucoup plus de données maintenant.
 clearvars data
-rawData = load([userpath '\Data\Données odeillo\Odeillo_UTC.mat']);
+rawData = load(fullfile(userpath, 'Data', 'DonneesOdeillo', 'Odeillo_UTC'));
 TR = timerange(datetime(2001,01,01, 'TimeZone', 'UTC'),...
     datetime(2004,01,01, 'TimeZone', 'UTC'), 'closed');
 rawData.data = rawData.data(TR,:);

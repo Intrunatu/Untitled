@@ -5,8 +5,8 @@
 %%%
 function pbl03_Resultats_2h()
 %% Comparaison des modeles
-addpath([userpath '\PartageDeCode\toolbox\'])
-addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox'))
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox', 'sources', 'prevision'))
 
 AJO = load('filledTablesAjaccio');
 ODE = load('filledTablesOdeillo.mat');

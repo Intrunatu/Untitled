@@ -2,8 +2,8 @@
 %%%
 function pbl05_SmartPersistance()
 clear all; close all; clc
-addpath([userpath '\PartageDeCode\toolbox\'])
-addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox'))
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox', 'sources', 'prevision'))
 
 
 %% Smart Persistance à 2h

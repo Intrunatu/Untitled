@@ -6,8 +6,8 @@
 %%
 function pbl02_CompareOdeilloAjaccio()
 close all; clc
-addpath([userpath '\PartageDeCode\toolbox\'])
-addpath([userpath '\PartageDeCode\toolbox\sources\prevision\'])
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox'))
+addpath(fullfile(userpath, 'PartageDeCode', 'toolbox', 'sources', 'prevision'))
 
 AJO = load('filledTablesAjaccio');
 ODE = load('filledTablesOdeillo.mat');
