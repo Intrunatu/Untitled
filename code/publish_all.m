@@ -4,7 +4,7 @@ filelist = dir("pbl*.m");
 xslPath = fullfile(repoPath(1:end-1),'mxdom2simplehtml.xsl');
 delete('html/*')
 
-
+set(0, 'DefaultFigureColormap', jet(64))
 for i =1:length(filelist)
     publish(filelist(i).name, 'stylesheet', xslPath );
 end
