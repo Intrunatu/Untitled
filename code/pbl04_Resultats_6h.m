@@ -22,14 +22,14 @@ if true
     figure(1), clf, hold all
     plot(m1{1}{6,2:end}*100, '.-')
     plot(m6{1}{6,2:end}*100, '.-')
-    xlabel('Setp')
+    xlabel('Step')
     ylabel('nRMSE [%]')
     grid on
     
     figure(2), clf, hold all
     plot(m1{1}{5,2:end}, '.-')
     plot(m6{1}{5,2:end}, '.-')
-    xlabel('Setp')
+    xlabel('Step')
     ylabel('RMSE [W/m^2]')
     grid on
 end
@@ -45,6 +45,8 @@ end
 %
 % Après discussion avec Cyril j'ai tracé la RMSE et là oui ça colle !
 % Encore un coup de la normalisation qui fait chier !
+%
+% *En passant au calcul auto des Nhist, les courbes collent parfaitement !*
 
 
 
@@ -127,6 +129,35 @@ title('Ajaccio')
 figure
 plot_rmse_vs_ts(ODE.steps0, ODE.timesteps, ODE.rmse)
 title('Odeillo')
+
+
+%% Nombre d'historique
+% Comme demandé par Marie Laure, j'ai enlevé le nombre de points
+% d'hitorique pour l'apprentissage. L'algo le détermine lui même avec
+% |parcorr|. J'ai tracé les résultats sur la figure ci dessous. Il prend
+% moins de points que ce que j'imposais (Nhist = Npred). Ca augmente à
+% peine la nRMSE. Pour Odeillo on a un comportement bizarre pour les grands
+% timesteps (donc peu de Npred). On est très souvent à 1 ce qui veut dire
+% qu'on fait de la smartPresistence + constante.
+% 
+% Autre effet, maintenant que le Nhist est calculé automatiquement, les
+% courbes de la <#1 première section> collent !
+
+figure, hold all
+plot([AJO.results.fmList.Npred], [AJO.results.fmList.Nhist], ...
+    '.-', 'DisplayName', 'Ajaccio')
+plot([ODE.results.fmList.Npred], [ODE.results.fmList.Nhist], ...
+    '.-', 'DisplayName', 'Odeillo')
+
+xlabel('Npred')
+ylabel('Nhist')
+grid on
+legend('Location', 'e')
+
+yyaxis right
+plot([ODE.results.fmList.Npred], [ODE.results.fmList.timeStep],...
+    '.-', 'DisplayName', 'TimeStep')
+ylabel('TimeStep [min]')
 
 %% Fonctions
 
@@ -219,7 +250,7 @@ title('Odeillo')
             opts.timeStep = dt;
             opts.sunHeightLim = modelTemplate.sunHeightLim;
             
-            opts.Nhist = ceil(maxHorizon/dt);
+            opts.Nhist = [];
             opts.Npred = ceil(maxHorizon/dt);
             opts.Nskip = 0;
             
